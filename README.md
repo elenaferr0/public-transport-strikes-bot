@@ -1,15 +1,12 @@
-# Italian Strikes Monitor Bot 🇮🇹⚠️
+# Italian public transport strikes bot 🇮🇹⚠️
 
 A Telegram bot that monitors Italian strikes from the official RSS feed and sends notifications to a Telegram channel when strikes match your configured criteria.
 
 ## Features
-
-- 📡 Monitors the official Italian Ministry of Transport strikes RSS feed
-- 🎯 Configurable filtering by sector and region
-- 🚫 Duplicate detection - prevents sending the same strike multiple times
-- 📊 CSV history tracking of the last 10 strikes
-- 🌍 Multi-language support (Italian/English)
-- 🔐 Environment-based configuration for security
+- Monitors the official Italian Ministry of Transport strikes RSS feed
+- Configurable filtering by sector and region
+- Duplicate detection - prevents sending the same strike multiple times
+- Multi-language support (Italian/English)
 
 ## Setup
 
