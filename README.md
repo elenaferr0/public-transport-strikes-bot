@@ -86,20 +86,3 @@ Common regions:
 ```bash
 python strikes.py
 ```
-## Customization
-
-### Adding New Translations
-
-Edit `translations.py` to add more sector/region translations or support additional languages.
-
-### Scheduling
-
-To run the bot continuously, consider using:
-- **Cron**: Add to crontab for periodic execution
-- **Systemd**: Create a service for continuous monitoring
-- **Docker**: Containerize for easy deployment
-
-### Example Cron Job (every 30 minutes)
-```bash
-*/30 * * * * cd /path/to/strikes && python strikes.py
-```
