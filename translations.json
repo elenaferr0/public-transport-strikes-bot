@@ -1,0 +1,28 @@
+{
+  "en": {
+    "Trasporto pubblico locale": "Local Public Transport 🚌",
+    "Ferroviario": "Railway 🚆",
+    "Italia": "Italy 🇮🇹",
+    "Veneto": "Veneto",
+    "Data inizio": "Start Date",
+    "Settore": "Sector",
+    "Rilevanza": "Relevance",
+    "Regione": "Region",
+    "Provincia": "Province",
+    "Tutte": "All",
+    "Nazionale": "National"
+  },
+  "it": {
+    "Trasporto pubblico locale": "Trasporto pubblico locale 🚌",
+    "Ferroviario": "Ferroviario 🚆",
+    "Italia": "Italia 🇮🇹",
+    "Veneto": "Veneto",
+    "Data inizio": "Data inizio",
+    "Settore": "Settore",
+    "Rilevanza": "Rilevanza",
+    "Regione": "Regione",
+    "Provincia": "Provincia",
+    "Tutte": "Tutte",
+    "Nazionale": "Nazionale"
+  }
+}

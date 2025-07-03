@@ -1,0 +1,22 @@
+[
+  {
+    "name": "LOCAL TRANSPORT STRIKE 🚌",
+    "sectors": [
+      "Trasporto pubblico locale"
+    ],
+    "regions": [
+      "Veneto",
+      "Italia"
+    ]
+  },
+  {
+    "name": "RAILWAY STRIKE 🚆",
+    "sectors": [
+      "Ferroviario"
+    ],
+    "regions": [
+      "Veneto",
+      "Italia"
+    ]
+  }
+]
