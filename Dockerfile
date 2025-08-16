@@ -25,6 +25,4 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Use supercronic to run your crontab file
-CMD ["/usr/local/bin/supercronic", "-inotify", "-debug", "./crontab"]
-
-
+CMD ["/usr/local/bin/supercronic", "-inotify", "crontab"]
