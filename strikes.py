@@ -176,6 +176,7 @@ async def main():
         raise ValueError("CHANNEL_ID and BOT_TOKEN must be set in environment variables")
 
     bot = Bot(token=BOT_TOKEN)
+    print(f"Parsing feed {RSS_URL}")
     feed = fetch(RSS_URL)
     parsed_feed = parse_feed(feed)
     await filter_and_publish(parsed_feed, bot, CHANNEL_ID)

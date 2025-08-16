@@ -1,0 +1,19 @@
+services:
+  strikes:
+    container_name: strikes
+    build: .
+    environment:
+      - TZ=Europe/Rome
+      - CHANNEL_ID=${CHANNEL_ID}
+      - BOT_TOKEN=${BOT_TOKEN}
+      - RSS_URL=https://scioperi.mit.gov.it/mit2/public/scioperi/rss
+      - MAX_STRIKES_TO_STORE=10
+      - STRIKES_CSV_FILE=strikes_history.csv
+      - CONFIG_FILE=config.json
+      - TRANSLATIONS_FILE=translations.json
+      - LANGUAGE=en
+    volumes:
+      - ./crontab:/app/crontab
+      - ./config.json:/app/config.json
+      - ./translations.json:/app/translations.json
+      - ./strikes_history.csv:/app/strikes_history.csv
