@@ -1,1 +1,1 @@
-*/1 * * * * python3 /app/strikes.py
+0 10 * * * python3 /app/strikes.py
