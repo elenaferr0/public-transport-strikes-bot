@@ -41,10 +41,6 @@ pip install -r requirements.txt
    ```bash
    BOT_TOKEN=your_actual_bot_token_here
    CHANNEL_ID=your_actual_channel_id_here
-   RSS_URL=https://scioperi.mit.gov.it/mit2/public/scioperi/rss
-   MAX_STRIKES_TO_STORE=10
-   STRIKES_CSV_FILE=strikes_history.csv
-   CONFIG_FILE=config.json
    ```
 
 ### 5. Configure Strike Filters
