@@ -1,6 +1,6 @@
 import pandas as pd
 import re, json, asyncio, feedparser, os, hashlib
-from datetime import datetime
+from datetime import datetime, timedelta
 from telegram import Bot
 from telegram.error import TelegramError
 from dotenv import load_dotenv
@@ -70,6 +70,49 @@ def loc(text, target_lang='en'):
     lang_translations = translations.get(target_lang, {})
     return lang_translations.get(text, text)  # Return original if no translation exists
 
+def build_message(strike, condition_name, lang='en', is_reminder=False):
+    """Build the message to send for a strike notification"""
+    strike_name = loc(condition_name, lang)
+    
+    # Add reminder prefix if this is a reminder
+    title_prefix = "⏰ REMINDER " if is_reminder else ""
+    
+    message = (
+        f"<b>{title_prefix}⚠️ {strike_name} ⚠️</b>\n\n"
+        f"<b>{loc('Data inizio', lang)}:</b> {strike['Date']} 📅\n"
+        f"<b>{loc('Settore', lang)}:</b> {loc(strike['Sector'], lang)}\n"
+        f"<b>{loc('Regione', lang)}:</b> {loc(strike['Region'], lang)}\n"
+    )
+
+    if pd.notna(strike['Province']):
+        message += f"<b>{loc('Provincia', lang)}:</b> {loc(strike['Province'], lang)}\n"
+
+    if pd.notna(strike['Relevance']):
+        message += f"<b>{loc('Rilevanza', lang)}:</b> {loc(strike['Relevance'], lang)}\n"
+    
+    if pd.notna(strike['Modality']):
+        message += f"<b>{loc('Modalità', lang)}:</b> {loc(strike['Modality'], lang)}\n"
+
+    return message
+
+def is_tomorrow(date_str):
+    """Check if the given date string is tomorrow"""
+    try:
+        strike_date = datetime.strptime(date_str, '%d/%m/%Y').date()
+        tomorrow = (datetime.now() + timedelta(days=1)).date()
+        return strike_date == tomorrow
+    except:
+        return False
+
+def is_today_or_future(date_str):
+    """Check if the given date string is today or in the future"""
+    try:
+        strike_date = datetime.strptime(date_str, '%d/%m/%Y').date()
+        today = datetime.now().date()
+        return strike_date >= today
+    except:
+        return False
+
 async def filter_and_publish(parsed_feed: pd.DataFrame, bot: Bot, channel_id: str, lang=None):
     if lang is None:
         lang = os.getenv('LANGUAGE', 'en')
@@ -92,41 +135,31 @@ async def filter_and_publish(parsed_feed: pd.DataFrame, bot: Bot, channel_id: st
             print(matching)
 
             for _, strike in matching.iterrows():
+                # Check if this is a future strike that we should send reminders/notifications for
+                if not is_today_or_future(strike['Date']):
+                    continue
+                
                 # Generate unique ID for this strike
                 strike_id = generate_strike_id(strike)
                 
-                if strike_already_sent(strike_id):
-                    print(f"Strike {strike_id} already sent, skipping...")
+                # Check if we should send a reminder (day before)
+                is_reminder = is_tomorrow(strike['Date'])
+                reminder_id = f"{strike_id}_reminder" if is_reminder else strike_id
+                
+                if strike_already_sent(reminder_id):
+                    print(f"Strike {reminder_id} already sent, skipping...")
                     continue
                 
-                strike_name = loc(condition['name'], lang)
-                message = (
-                    f"<b>⚠️ {strike_name} ⚠️</b>\n\n"
-                    f"<b>{loc('Data inizio', lang)}:</b> {strike['Date']} 📅\n"
-                    f"<b>{loc('Settore', lang)}:</b> {loc(strike['Sector'], lang)}\n"
-                    f"<b>{loc('Regione', lang)}:</b> {loc(strike['Region'], lang)}\n"
-                )
-
-                if pd.notna(strike['Province']):
-                    message += f"<b>{loc('Provincia', lang)}:</b> {loc(strike['Province'], lang)}\n"
-
-                if pd.notna(strike['Relevance']):
-                    message += f"<b>{loc('Rilevanza', lang)}:</b> {loc(strike['Relevance'], lang)}\n"
-                
-                if pd.notna(strike['Modality']):
-                    message += f"<b>{loc('Modalità', lang)}:</b> {loc(strike['Modality'], lang)}\n"
+                # Build the message using the new function
+                message = build_message(strike, condition['name'], lang, is_reminder)
 
                 try:
                     await bot.send_message(chat_id=channel_id, text=message, parse_mode='HTML')
-                    print(f"Message sent for strike {strike_id}")
-                    save_strike_to_history(strike, strike_id)
+                    print(f"Message sent for strike {reminder_id}")
+                    save_strike_to_history(strike, reminder_id)
                     
                 except TelegramError as e:
                     print(f"Error sending message to Telegram: {e}")
-
-                strike_id = generate_strike_id(strike)
-                if not strike_already_sent(strike_id):
-                    save_strike_to_history(strike, strike_id)
 
 def generate_strike_id(strike_data):
     strike_string = f"{strike_data['Date']}{strike_data['Sector']}{strike_data['Region']}{strike_data.get('Province', '')}"
@@ -138,10 +171,10 @@ def load_strikes_history():
         if os.path.exists(csv_file):
             return pd.read_csv(csv_file)
         else:
-            return pd.DataFrame(columns=['strike_id', 'date', 'sector', 'region', 'province', 'sent_at'])
+            return pd.DataFrame(columns=['strike_id', 'date', 'sector', 'region', 'province', 'modality', 'sent_at'])
     except Exception as e:
         print(f"Error loading strikes history: {e}")
-        return pd.DataFrame(columns=['strike_id', 'date', 'sector', 'region', 'province', 'sent_at'])
+        return pd.DataFrame(columns=['strike_id', 'date', 'sector', 'region', 'province', 'modality', 'sent_at'])
 
 def save_strike_to_history(strike_data, strike_id):
     """Save a strike to the history CSV file"""
