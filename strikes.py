@@ -14,6 +14,7 @@ def parse_feed(feed):
     relevances = []
     regions = []
     provinces = []
+    modalities = []
 
     for entry in feed.entries:
         title = entry.title
@@ -23,19 +24,22 @@ def parse_feed(feed):
         relevance_match = re.search(r'Rilevanza: ([^-]+)', title)
         region_match = re.search(r'Regione: ([^-]+)', title)
         province_match = re.search(r'Provincia: ([^$]+)', title)
+        modality_match = re.search(r'modalità: (.*?)<br />', entry.summary_detail.value)
 
         dates.append(date_match.group(1) if date_match else None)
         sectors.append(sector_match.group(1).strip() if sector_match else None)
         relevances.append(relevance_match.group(1).strip() if relevance_match else None)
         regions.append(region_match.group(1).strip() if region_match else None)
         provinces.append(province_match.group(1).strip() if province_match else None)
+        modalities.append(modality_match.group(1).strip() if modality_match else None)
 
     strikes_df = pd.DataFrame({
         'Date': dates,
         'Sector': sectors,
         'Relevance': relevances,
         'Region': regions,
-        'Province': provinces
+        'Province': provinces,
+        'Modality': modalities
     })
 
     return strikes_df
@@ -108,6 +112,9 @@ async def filter_and_publish(parsed_feed: pd.DataFrame, bot: Bot, channel_id: st
 
                 if pd.notna(strike['Relevance']):
                     message += f"<b>{loc('Rilevanza', lang)}:</b> {loc(strike['Relevance'], lang)}\n"
+                
+                if pd.notna(strike['Modality']):
+                    message += f"<b>{loc('Modalità', lang)}:</b> {loc(strike['Modality'], lang)}\n"
 
                 try:
                     await bot.send_message(chat_id=channel_id, text=message, parse_mode='HTML')
@@ -149,6 +156,7 @@ def save_strike_to_history(strike_data, strike_id):
         'sector': strike_data['Sector'],
         'region': strike_data['Region'],
         'province': strike_data.get('Province', ''),
+        'modality': strike_data.get('Modality', ''),
         'sent_at': datetime.now().isoformat()
     }
     

@@ -10,7 +10,8 @@
     "Regione": "Region",
     "Provincia": "Province",
     "Tutte": "All",
-    "Nazionale": "National"
+    "Nazionale": "National",
+    "Modalità": "Modality"
   },
   "it": {
     "Trasporto pubblico locale": "Trasporto pubblico locale 🚌",
@@ -23,6 +24,7 @@
     "Regione": "Regione",
     "Provincia": "Provincia",
     "Tutte": "Tutte",
-    "Nazionale": "Nazionale"
+    "Nazionale": "Nazionale",
+    "Modalità": "Modalità"
   }
 }
